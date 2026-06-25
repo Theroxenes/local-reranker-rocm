@@ -1,6 +1,7 @@
 # local-reranker
 
 A local reranker service with a Jina compatible API.
+Forked from olafgeibig/local-reranker to add ROCm support.
 
 ## Overview
 
@@ -11,8 +12,6 @@ This project provides a FastAPI-based web service that implements a reranking AP
 *   **Jina Compatible API**: Implements `/v1/rerank` endpoint structure
 *   **Local Hosting**: Run reranker model entirely on your own infrastructure
 *   **Multiple Backends**: Supports both PyTorch and MLX backends for optimal performance
-*   **Apple Silicon Optimization**: MLX backend provides optimized performance for M1/M2/M3 chips
-*   **MLX Fallback Reranker**: Automatically wraps MLX-converted Hugging Face models that do not ship a `rerank.py` helper
 *   **Sentence Transformers**: Uses powerful `sentence-transformers` library for PyTorch backend
 *   **Configurable Model**: Easily switch between different reranker models and backends
 *   **Modern FastAPI**: Built using modern FastAPI features like `lifespan` for resource management
@@ -30,16 +29,13 @@ This project provides a FastAPI-based web service that implements a reranking AP
 *   PyTorch 2.5+ (automatically installed)
 *   CUDA/MPS support for GPU acceleration (optional)
 
-**MLX Backend (Apple Silicon only):**
-*   Apple Silicon (M1/M2/M3) Mac
-*   MLX and MLX-LM libraries (automatically installed)
-*   Optimized for memory efficiency and performance on Apple chips
+**ROCm Backend:**
 
 ## Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/olafgeibig/local-reranker.git
+git clone https://github.com/theroxenes/local-reranker-rocm.git
 cd local-reranker
 
 # Create virtual environment
@@ -74,7 +70,6 @@ cli --backend <backend_type> --model <model> --host <host> --port <port>
 ### Available Backends
 
 *   `pytorch`: PyTorch-based reranker (default, cross-platform)
-*   `mlx`: MLX-based reranker (Apple Silicon optimized)
 
 ### Command Options
 
@@ -93,12 +88,6 @@ cli --backend <backend_type> --model <model> --host <host> --port <port>
 cli serve --backend pytorch --model jinaai/jina-reranker-v2-base-multilingual
 ```
 
-**MLX Backend (Apple Silicon):**
-
-```bash
-cli serve --backend mlx --model jinaai/jina-reranker-v3-mlx
-```
-
 **Development Mode:**
 
 ```bash
@@ -111,6 +100,14 @@ cli serve --backend pytorch --reload --log-level debug
 cli config show
 ```
 
+## Docker Deployment (ROCm GPU)
+
+### Build
+
+```bash
+docker build -t local-reranker-rocm .
+
+
 ## API Usage
 
 Once the server is running, you can send requests to the `/v1/rerank` endpoint. Here's an example using `curl`:
@@ -119,7 +116,7 @@ Once the server is running, you can send requests to the `/v1/rerank` endpoint. 
 curl -X POST "http://localhost:8010/v1/rerank" \
      -H "Content-Type: application/json" \
      -d '{
-           "model": "jina-reranker-v2-base-multilingual", 
+           "model": "BAAI/bge-reranker-v2-m3", 
            "query": "What are the benefits of using FastAPI?", 
            "documents": [
              "FastAPI is a modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints.",
@@ -146,8 +143,8 @@ curl -X POST "http://localhost:8010/v1/rerank" \
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/olafgeibig/local-reranker.git
-    cd local-reranker
+    git clone https://github.com/theroxenes/local-reranker-rocm.git
+    cd local-reranker-rocm
     ```
 
 2. **Create a virtual environment:**
@@ -206,15 +203,6 @@ uv run ruff check && uv run mypy src/
 
 ### Common Issues
 
-**MLX not found:**
-```bash
-# Ensure you're on Apple Silicon
-uname -m  # Should show arm64
-
-# Install MLX dependencies
-uv add mlx mlx-lm safetensors
-```
-
 **Model download fails:**
 ```bash
 # Check internet connection
@@ -230,25 +218,7 @@ python -c "import mlx; print(mlx.metal.is_available())"
 # Monitor memory usage
 top -o mem | grep python
 ```
-
-### Using MLX Models Without `rerank.py`
-
-The MLX backend now includes an internal cross-encoder reranker that automatically loads any MLX-converted Hugging Face repository, even when the repo does not provide a `rerank.py` helper. When `rerank.py` is missing or cannot be imported, the server logs a message similar to `Using internal cross-encoder fallback` so you can confirm which path is active. If your model ships a `projector.safetensors` file, place it next to the weights—the fallback reranker will load it to project hidden states into the correct embedding space. When the projector file is absent, the reranker falls back to raw hidden states, so you can still experiment with newly converted models without extra work.
-
 ### Configuration Issues
-
-If you're having trouble with MLX backend configuration, try these explicit CLI commands:
-
-```bash
-# Force MLX backend with explicit model
-cli serve --backend mlx --model jinaai/jina-reranker-v3-mlx
-
-# Check current configuration
-cli config show
-
-# Use development mode for debugging
-cli serve --backend mlx --reload --log-level debug
-```
 
 **Model download fails:**
 ```bash
@@ -271,11 +241,8 @@ top -o mem | grep python
 The application uses pydantic-settings for configuration management. You can set the following environment variables to override defaults:
 
 ```bash
-# Force MLX backend
-export RERANKER_RERANKER_TYPE=mlx
-
 # Custom model name
-export RERANKER_MODEL_NAME=custom-mlx-model
+export RERANKER_MODEL_NAME=custom-model
 
 # Custom host and port
 export RERANKER_HOST=0.0.0.0
