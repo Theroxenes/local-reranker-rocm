@@ -85,7 +85,7 @@ cli --backend <backend_type> --model <model> --host <host> --port <port>
 **PyTorch Backend (default):**
 
 ```bash
-cli serve --backend pytorch --model jinaai/jina-reranker-v2-base-multilingual
+cli serve --backend pytorch --model BAAI/bge-reranker-v2-m3
 ```
 
 **Development Mode:**
@@ -207,7 +207,7 @@ uv run ruff check && uv run mypy src/
 ```bash
 # Check internet connection
 # Try manual download
-huggingface-cli download jinaai/jina-reranker-v3-mlx
+huggingface-cli download BAAI/bge-reranker-v2-m3
 ```
 
 **Performance issues:**
@@ -219,13 +219,6 @@ python -c "import mlx; print(mlx.metal.is_available())"
 top -o mem | grep python
 ```
 ### Configuration Issues
-
-**Model download fails:**
-```bash
-# Check internet connection
-# Try manual download
-huggingface-cli download jinaai/jina-reranker-v3-mlx
-```
 
 **Performance issues:**
 ```bash
