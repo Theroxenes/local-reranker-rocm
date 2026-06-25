@@ -218,16 +218,6 @@ python -c "import mlx; print(mlx.metal.is_available())"
 # Monitor memory usage
 top -o mem | grep python
 ```
-### Configuration Issues
-
-**Performance issues:**
-```bash
-# Check MLX is using GPU (if available)
-python -c "import mlx; print(mlx.metal.is_available())"
-
-# Monitor memory usage
-top -o mem | grep python
-```
 
 ### Environment Variables
 
