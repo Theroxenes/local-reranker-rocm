@@ -1,0 +1,50 @@
+services:
+  reranker:
+    image: local-reranker-rocm
+    container_name: local-reranker-rocm
+    restart: unless-stopped
+    ports:
+      - "8010:8010"
+    environment:
+      - RERANKER_BACKEND_TYPE=pytorch
+      # Default to a stock-architecture cross-encoder. NOTE: jina-reranker-v2
+      # ships custom trust_remote_code that breaks on transformers >=4.57
+      # (ImportError: create_position_ids_from_input_ids). bge-reranker-v2-m3
+      # loads as a standard CrossEncoder with no remote code — robust against
+      # transformers version churn. Swap via this env var alone (no rebuild).
+      - RERANKER_MODEL_NAME=BAAI/bge-reranker-v2-m3
+      - RERANKER_HOST=0.0.0.0
+      - RERANKER_PORT=8010
+      # Explicit HF cache home so weights persist to the named volume below
+      # regardless of the image user's default home directory.
+      - HF_HOME=/cache
+    volumes:
+      - hf-cache:/cache          # persist model weights across recreates
+    # ── AMD ROCm GPU access ──
+    # Compute needs /dev/kfd + a render node. The whole /dev/dri dir is passed
+    # for portability (render node numbering varies by host); if you want to
+    # scope tighter and know your node, use /dev/dri/renderD128 instead.
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    # MUST be the GID of the `render` group that owns /dev/kfd and the render
+    # node. The numeric GID differs per host; check with
+    # `getent group render` (or `stat -c '%g' /dev/kfd`) and set it here.
+    # 993 is correct on the reference system; yours may differ.
+    group_add:
+      - "993"
+    # Modest shared memory for the inference process.
+    shm_size: "1g"
+    healthcheck:
+      # /health returns 503 when the model failed to load, 200 when ready.
+      # urlopen raises on non-2xx, so a failed/loading model exits non-zero
+      # and Docker marks the container unhealthy.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8010/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s      # first boot downloads the model; give it room
+ 
+volumes:
+  hf-cache:
+
