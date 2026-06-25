@@ -29,8 +29,6 @@ This project provides a FastAPI-based web service that implements a reranking AP
 *   PyTorch 2.5+ (automatically installed)
 *   ROCm support for GPU acceleration (optional)
 
-**ROCm Backend:**
-
 # Installation
 
 ```bash
