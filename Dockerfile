@@ -1,4 +1,4 @@
-FROM rocm/pytorch:latest
+FROM rocm/pytorch@sha256:4449f856653602317e4101a76fce599c7fcd58ccec2e539951fce5f73083179e
  
 WORKDIR /app
  
@@ -39,6 +39,7 @@ SHELL ["/bin/bash", "-c"]
 # torch and mlx/mlx-lm have been removed from pyproject dependencies in this
 # fork (torch comes from the base venv; mlx is Apple-only).
 RUN /opt/venv/bin/uv pip install --python /opt/venv/bin/python -e .
+RUN /opt/venv/bin/python -c "import torch; assert torch.version.hip is not None, f'Not a ROCm build: {torch.__version__}'; print(f'OK: torch {torch.__version__}, hip={torch.version.hip}')"
  
 # Set environment variables. PATH puts /opt/venv/bin first so bare `python`
 # (in ENTRYPOINT, CMD, HEALTHCHECK) resolves to the venv interpreter that has
@@ -50,7 +51,7 @@ ENV PATH=/opt/venv/bin:$PATH \
     RERANKER_PORT=8010
  
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8010/health')" || exit 1
  
 # Default entrypoint - can be overridden
