@@ -7,6 +7,7 @@ name = "local-reranker"
 version = "0.2.0"
 authors = [
   { name="Olaf Geibig", email="olaf@pobox.com" }, 
+  { name="theroxenes", email="theroxenes@proton.me"}
 ]
 description = "A lightweight, local reranker API implementation compatible with Jina."
 readme = "README.md"
@@ -40,8 +41,8 @@ dependencies = [
 ] 
 
 [project.urls]
-"Homepage" = "https://github.com/olafgeibig/local-reranker" 
-"Bug Tracker" = "https://github.com/olafgeibig/local-reranker/issues" 
+"Homepage" = "https://github.com/theroxenes/local-reranker-rocm" 
+"Bug Tracker" = "https://github.com/theroxenes/local-reranker-rocm/issues" 
 
 [project.scripts]
 local-reranker = "local_reranker.cli:main"
