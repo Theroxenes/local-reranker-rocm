@@ -1,0 +1,30 @@
+# Python caches / build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# VCS
+.git/
+.gitignore
+
+# Tests, planning docs, and upstream artifacts not needed in the image
+tests/
+tasks/
+docs/
+
+# Local env / editor
+.venv/
+venv/
+.env
+*.swp
+.DS_Store
+
+# Keep README.md (COPYed in the Dockerfile); ignore other top-level docs
+CHANGELOG.md
+AGENTS.md

@@ -28,9 +28,11 @@ services:
       - /dev/kfd
       - /dev/dri
     # MUST be the GID of the `render` group that owns /dev/kfd and the render
-    # node. The numeric GID differs per host; check with
-    # `getent group render` (or `stat -c '%g' /dev/kfd`) and set it here.
-    # 993 is correct on the reference system; yours may differ.
+    # node. The numeric GID is HOST-SPECIFIC — there is no universal default.
+    # Verify with `getent group render` (or `stat -c '%g' /dev/kfd`) and set it.
+    # Common values: 104 (Debian/Ubuntu bare metal), 993 (some Proxmox
+    # unprivileged LXCs via idmap), 109/110 (other distros). See README
+    # troubleshooting if GPU access fails with "No HIP GPUs available".
     group_add:
       - "104" # <-- VERIFY against your host; see comment above
     # Modest shared memory for the inference process.

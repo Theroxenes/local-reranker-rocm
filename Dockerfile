@@ -18,9 +18,10 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
     && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
  
 # NOTE: original created a non-root appuser (uid 1000) here. Dropped for now —
-# GPU access depends on the container process being in the `render` group
-# (GID 993), supplied at runtime via --group-add / compose group_add. Get GPU
-# working first, then re-add a hardened non-root user that is a member of 993.
+# GPU access depends on the container process being in the `render` group that
+# owns /dev/kfd, supplied at runtime via --group-add / compose group_add. The
+# render GID is HOST-SPECIFIC (see docker-compose.yml + README troubleshooting).
+# Get GPU working first, then re-add a hardened non-root user in that group.
  
 # Expose port
 EXPOSE 8010
