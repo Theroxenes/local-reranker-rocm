@@ -182,6 +182,7 @@ async def rerank_endpoint(
 
 
 @app.get("/health")
-def health_check():
-    """Basic health check endpoint."""
+def health_check(request: Request):
+    if getattr(request.app.state, "reranker", None) is None:
+        raise HTTPException(status_code=503, detail="Reranker model failed to load")
     return {"status": "ok"}
