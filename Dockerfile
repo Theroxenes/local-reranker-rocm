@@ -29,7 +29,6 @@ EXPOSE 8010
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 COPY src src
-COPY uv.lock uv.lock
  
 SHELL ["/bin/bash", "-c"]
  
