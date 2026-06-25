@@ -15,7 +15,9 @@ build
 *.md
 !README.md
 tests
-attic
+.attic
 docs
 openspec
 .github
+uv.lock
+tasks
