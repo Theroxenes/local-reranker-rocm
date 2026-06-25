@@ -28,13 +28,13 @@ dependencies = [
     "pydantic>=2.10.0",
     "pydantic-settings>=2.6.0",
     "sentence-transformers>=5.0.0",
-    "torch>=2.5.0",
+    # torch removed: provided by the rocm/pytorch base image (ROCm build).
+    # Reinstalling here would pull a CUDA/CPU wheel over the ROCm one.
     "transformers>=4.57.0",
     "tokenizers>=0.21.0",
     "accelerate>=1.2.0",
     "einops>=0.8.0",
-    "mlx>=0.30.0",
-    "mlx-lm>=0.28.0",
+    # mlx / mlx-lm removed: Apple-Silicon only, irrelevant on ROCm/linux-amd64.
     "safetensors>=0.5.0",
     "psutil>=7.0.0",
 ] 
