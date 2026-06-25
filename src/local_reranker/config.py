@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 
 # Default models for each backend type
 RERANKER_DEFAULTS: Dict[str, str] = {
-    "pytorch": "jinaai/jina-reranker-v2-base-multilingual",
+    "pytorch": "BAAI/bge-reranker-v2-m3",
     "mlx": "jinaai/jina-reranker-v3-mlx",
     # Future implementations
     # "onnx": "some/onnx-model",

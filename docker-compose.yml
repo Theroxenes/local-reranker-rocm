@@ -32,7 +32,7 @@ services:
     # `getent group render` (or `stat -c '%g' /dev/kfd`) and set it here.
     # 993 is correct on the reference system; yours may differ.
     group_add:
-      - "993"
+      - "104" # <-- VERIFY against your host; see comment above
     # Modest shared memory for the inference process.
     shm_size: "1g"
     healthcheck:
